@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --watch src --ext ts,tsx --ignore dist --exec \"npm run dev:exec\"",
+    "dev:exec": "npm run clean && npm run build && node dist/index.js",
+    "build": "tsc",
+    "clean": "rimraf dist"
   },
   "repository": {
     "type": "git",
