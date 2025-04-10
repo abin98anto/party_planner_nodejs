@@ -1,8 +1,9 @@
 export default interface IService {
   name: string;
   description: string;
+  categoryId: string;
   images: string[];
   price: number;
-  datesAvailabe: Date[];
+  datesAvailable: Date[];
   isActive: boolean;
 }
