@@ -12,7 +12,8 @@ export const signup = async (req: Request, res: Response) => {
 
     const userExists = await UserModel.findOne({ email: userData.email });
     if (userExists) {
-      return res.status(409).json({ message: "Email is taken." });
+      res.status(409).json({ message: "Email is taken." });
+      return;
     }
 
     const hashedPassword = hashPassword(userData.password);
@@ -32,7 +33,8 @@ export const login = async (req: Request, res: Response) => {
       !user ||
       !(await bcrypt.compare(userData.password!, user.password as string))
     ) {
-      return res.status(409).json({ message: CNST.USER_NOT_FOUND });
+      res.status(409).json({ message: CNST.USER_NOT_FOUND });
+      return;
     }
   } catch (error) {
     console.log("error in user login", error);
