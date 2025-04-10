@@ -4,5 +4,6 @@ export default interface IAddress {
   landmark: string;
   city: string;
   district: string;
+  state: string;
   pincode: number;
 }
