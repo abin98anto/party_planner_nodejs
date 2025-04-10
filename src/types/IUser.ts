@@ -5,4 +5,5 @@ export default interface IBasicUser {
   password: string;
   picture: string;
   isActive: boolean;
+  isAdmin: boolean;
 }
