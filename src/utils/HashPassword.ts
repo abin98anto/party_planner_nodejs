@@ -9,3 +9,5 @@ const hashPassword = async (password: string) => {
     console.log("Error Hashing Password.", error);
   }
 };
+
+export default hashPassword;
