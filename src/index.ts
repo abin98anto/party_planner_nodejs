@@ -6,6 +6,7 @@ import { connectDB } from "./services/mongo";
 import userRouter from "./routes/UserRouter";
 import { corsOptions } from "./config/corsOptions";
 import categoryRouter from "./routes/CategoryRouter";
+import productRouter from "./routes/ProductRouter";
 
 const app = express();
 app.use(cors(corsOptions));
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/", userRouter);
 app.use("/category", categoryRouter);
+app.use("/product", productRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {
