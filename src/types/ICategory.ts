@@ -1,5 +1,6 @@
 export default interface ICategory {
-    name:string;
-    isActive:string;
-    isDeleted:string;
+  _id?: string;
+  name: string;
+  isActive: string;
+  isDeleted: string;
 }
