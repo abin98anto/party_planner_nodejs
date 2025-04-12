@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const CategorySchema = new mongoose.Schema(
   {
     name: String,
-    isActive: String,
+    isActive: { type: String, default: true },
   },
   {
     timestamps: true,
