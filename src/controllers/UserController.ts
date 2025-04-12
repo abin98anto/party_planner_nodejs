@@ -5,6 +5,7 @@ import UserModel from "../models/UserModel";
 import IUser from "../types/IUser";
 import hashPassword from "../utils/HashPassword";
 import CNST from "../utils/constants";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -28,7 +29,7 @@ export const signup = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const userData: Partial<IUser> = req.body;
+    const userData: Partial<IUser> = req.body.userData;
     const user = await UserModel.findOne({ email: userData.email });
     if (
       !user ||
@@ -37,6 +38,33 @@ export const login = async (req: Request, res: Response) => {
       res.status(409).json({ message: CNST.USER_NOT_FOUND });
       return;
     }
+
+    const accessToken = generateAccessToken({
+      _id: user._id.toString(),
+      email: user.email as string,
+    });
+    const refreshToken = generateRefreshToken({
+      _id: user._id.toString(),
+      email: user.email as string,
+    });
+
+    const plainUser = JSON.parse(JSON.stringify(user));
+    const { password: pass, ...otherData } = plainUser;
+    res
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 30 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({ success: true, data: otherData });
   } catch (error) {
     console.log("error in user login", error);
     res.status(500).json({ message: CNST.SERVER_ERR });
