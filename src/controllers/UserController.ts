@@ -33,7 +33,8 @@ export const login = async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ email: userData.email });
     if (
       !user ||
-      !(await bcrypt.compare(userData.password!, user.password as string))
+      !(await bcrypt.compare(userData.password!, user.password as string)) ||
+      userData.role === user.role
     ) {
       res.status(409).json({ message: CNST.USER_NOT_FOUND });
       return;

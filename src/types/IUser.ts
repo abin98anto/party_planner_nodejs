@@ -4,5 +4,5 @@ export default interface IUser {
   password: string;
   picture: string;
   isActive: boolean;
-  isAdmin: boolean;
+  role: string;
 }
