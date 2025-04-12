@@ -6,4 +6,5 @@ export default interface IAddress {
   district: string;
   state: string;
   pincode: number;
+  isDeleted: boolean;
 }

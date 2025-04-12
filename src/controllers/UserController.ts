@@ -5,7 +5,11 @@ import UserModel from "../models/UserModel";
 import IUser from "../types/IUser";
 import hashPassword from "../utils/HashPassword";
 import CNST from "../utils/constants";
-import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -71,3 +75,54 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ message: CNST.SERVER_ERR });
   }
 };
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res
+      .clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      })
+      .clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      })
+      .status(200)
+      .json({ message: "logout successful" });
+    return;
+  } catch (error) {
+    console.log("logout failed", error);
+    res.status(400).json({ success: false, message: "logout failed" });
+    return;
+  }
+};
+
+// export const refreshAccessToken = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   try {
+//     const refreshToken = req.cookies["refreshToken"];
+//     const { data } = await verifyRefreshToken(refreshToken);
+
+//     res
+//       .cookie("accessToken", data, {
+//         httpOnly: true,
+//         secure: true,
+//         sameSite: "none",
+//         maxAge: 30 * 1000,
+//       })
+//       .status(200)
+//       .json(data);
+//     return;
+//   } catch (error) {
+//     res.status(401).json({
+//       success: false,
+//       message:
+//         error instanceof Error ? error.message : comments.TOKEN_REFRESH_FAIL,
+//       err: error,
+//     });
+//   }
+// };
