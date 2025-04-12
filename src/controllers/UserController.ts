@@ -9,7 +9,6 @@ import CNST from "../utils/constants";
 export const signup = async (req: Request, res: Response) => {
   try {
     const userData: IUser = req.body;
-    console.log("the userdaata", userData);
 
     const userExists = await UserModel.findOne({ email: userData.email });
     if (userExists) {
@@ -17,12 +16,13 @@ export const signup = async (req: Request, res: Response) => {
       return;
     }
 
-    const hashedPassword = hashPassword(userData.password);
+    const hashedPassword = await hashPassword(userData.password);
     const newUser = new UserModel({ ...userData, password: hashedPassword });
     await newUser.save();
+    res.status(200).json({ success: true, data: newUser });
   } catch (error) {
     console.log("error in user signup", error);
-    res.status(500).json({ message: CNST.SERVER_ERR });
+    res.status(500).json({ success: false, message: CNST.SERVER_ERR });
   }
 };
 
