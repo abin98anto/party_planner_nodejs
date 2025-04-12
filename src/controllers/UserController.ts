@@ -34,7 +34,7 @@ export const login = async (req: Request, res: Response) => {
     if (
       !user ||
       !(await bcrypt.compare(userData.password!, user.password as string)) ||
-      userData.role === user.role
+      userData.role !== user.role
     ) {
       res.status(409).json({ message: CNST.USER_NOT_FOUND });
       return;
