@@ -1,4 +1,5 @@
-export default interface IService {
+export default interface IProduct {
+  _id?: string;
   name: string;
   description: string;
   categoryId: string;

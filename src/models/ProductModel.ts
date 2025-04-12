@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ServiceSchema = new mongoose.Schema(
+const ProductSchema = new mongoose.Schema(
   {
     name: String,
     description: String,
@@ -15,5 +15,5 @@ const ServiceSchema = new mongoose.Schema(
   }
 );
 
-const ServiceModal = mongoose.model("Service", ServiceSchema);
-export default ServiceModal;
+const ProductModal = mongoose.model("Service", ProductSchema);
+export default ProductModal;

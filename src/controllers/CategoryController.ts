@@ -15,7 +15,7 @@ export const addCategory = async (req: Request, res: Response) => {
 
     const newCategory = new CategoryModel(categoryData);
     await newCategory.save();
-    res.status(200).json({ success: true, data: newCategory });
+    res.status(201).json({ success: true, data: newCategory });
   } catch (error) {
     console.log("error in add category", error);
     res.status(500).json({ success: false, message: "error in add category" });
