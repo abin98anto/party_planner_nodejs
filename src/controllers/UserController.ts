@@ -9,6 +9,7 @@ import CNST from "../utils/constants";
 export const signup = async (req: Request, res: Response) => {
   try {
     const userData: IUser = req.body;
+    console.log("the userdaata", userData);
 
     const userExists = await UserModel.findOne({ email: userData.email });
     if (userExists) {
