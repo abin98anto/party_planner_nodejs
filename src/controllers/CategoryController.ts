@@ -24,7 +24,7 @@ export const addCategory = async (req: Request, res: Response) => {
 
 export const getCategories = async (req: Request, res: Response) => {
   try {
-    const data = await CategoryModel.find();
+    const data = await CategoryModel.find({ isDeleted: false });
     res.status(200).json({ success: true, data });
   } catch (error) {
     console.log("error fetching all categories", error);
