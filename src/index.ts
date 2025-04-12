@@ -1,10 +1,13 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import { connectDB } from "./services/mongo";
 import userRouter from "./routes/UserRouter";
+import { corsOptions } from "./config/corsOptions";
 
 const app = express();
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 
