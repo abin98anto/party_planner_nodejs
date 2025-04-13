@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const AddressSchema = new mongoose.Schema(
   {
+    userId: { type: String, ref: "User" },
     venue: String,
     place: String,
     landmark: String,
