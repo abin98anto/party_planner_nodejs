@@ -5,6 +5,7 @@ const ProviderSchema = new mongoose.Schema(
     name: String,
     company: String,
     contact: Number,
+    locations: [String],
     isActive: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
   },
