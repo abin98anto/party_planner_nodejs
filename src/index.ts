@@ -7,6 +7,7 @@ import userRouter from "./routes/UserRouter";
 import { corsOptions } from "./config/corsOptions";
 import categoryRouter from "./routes/CategoryRouter";
 import productRouter from "./routes/ProductRouter";
+import providerRouter from "./routes/ProviderRoutes";
 
 const app = express();
 app.use(cors(corsOptions));
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/", userRouter);
 app.use("/category", categoryRouter);
 app.use("/product", productRouter);
+app.use("/provider", providerRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {

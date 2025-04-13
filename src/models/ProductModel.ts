@@ -15,5 +15,5 @@ const ProductSchema = new mongoose.Schema(
   }
 );
 
-const ProductModal = mongoose.model("Service", ProductSchema);
+const ProductModal = mongoose.model("Product", ProductSchema);
 export default ProductModal;
