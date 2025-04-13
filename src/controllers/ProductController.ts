@@ -86,7 +86,7 @@ export const getProductsUserSide = async (req: Request, res: Response) => {
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const data = await ProductModal.find({ isActive: false });
+    const data = await ProductModal.find();
     res.status(200).json({ success: true, data });
   } catch (error) {
     console.log("error fetching all products", error);
