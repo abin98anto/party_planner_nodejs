@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import IProduct from "../types/IProduct";
 import ProductModal from "../models/ProductModel";
+import ProviderModal from "../models/ProviderModel";
 
 export const addProduct = async (req: Request, res: Response) => {
   try {
@@ -14,9 +15,78 @@ export const addProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const getProductsUserSide = async (req: Request, res: Response) => {
+  try {
+    const {
+      search,
+      minPrice,
+      maxPrice,
+      category,
+      location,
+      startDate,
+      endDate,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    const query: any = { isActive: true };
+
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    if (category) {
+      query.categoryId = category;
+    }
+
+    if (location) {
+      const providers = await ProviderModal.find({ location });
+      const providerIds = providers.map((p) => p._id);
+      query.providerId = { $in: providerIds };
+    }
+
+    if (startDate || endDate) {
+      query.datesAvailable = {};
+      if (startDate) query.datesAvailable.$gte = new Date(startDate as string);
+      if (endDate) query.datesAvailable.$lte = new Date(endDate as string);
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const totalCount = await ProductModal.countDocuments(query);
+    const totalPages = Math.ceil(totalCount / Number(limit));
+
+    const data = await ProductModal.find(query)
+      .populate("categoryId")
+      .populate("providerId")
+      .skip(skip)
+      .limit(Number(limit))
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data,
+      totalCount,
+      totalPages,
+      currentPage: Number(page),
+    });
+  } catch (error) {
+    console.log("error fetching products", error);
+    res
+      .status(500)
+      .json({ success: false, message: "error fetching products" });
+  }
+};
+
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const data = await ProductModal.find({});
+    const data = await ProductModal.find({ isActive: false });
     res.status(200).json({ success: true, data });
   } catch (error) {
     console.log("error fetching all products", error);
