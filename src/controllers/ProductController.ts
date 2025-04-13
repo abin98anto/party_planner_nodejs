@@ -39,3 +39,16 @@ export const updateProduct = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: "error updating product" });
   }
 };
+
+export const getProductDetails = async (req: Request, res: Response) => {
+  try {
+    const { productId } = req.params;
+    const productDetails = await ProductModal.findById(productId);
+    res.status(200).json({ success: true, data: productDetails });
+  } catch (error) {
+    console.log("error fetching product details", error);
+    res
+      .status(500)
+      .json({ success: false, message: "error fetching product details" });
+  }
+};
