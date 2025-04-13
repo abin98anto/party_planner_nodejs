@@ -8,6 +8,7 @@ import { corsOptions } from "./config/corsOptions";
 import categoryRouter from "./routes/CategoryRouter";
 import productRouter from "./routes/ProductRouter";
 import providerRouter from "./routes/ProviderRoutes";
+import locationRouter from "./routes/LocationRouter";
 
 const app = express();
 app.use(cors(corsOptions));
@@ -18,6 +19,7 @@ app.use("/", userRouter);
 app.use("/category", categoryRouter);
 app.use("/product", productRouter);
 app.use("/provider", providerRouter);
+app.use("/location", locationRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {

@@ -16,7 +16,9 @@ export const addProvider = async (req: Request, res: Response) => {
 
 export const getProviders = async (req: Request, res: Response) => {
   try {
-    const data = await ProviderModal.find({ isDeleted: false });
+    const data = await ProviderModal.find({ isDeleted: false }).populate(
+      "locations"
+    );
     res.status(200).json({ success: true, data });
   } catch (error) {
     console.log("error fetching all providers", error);
