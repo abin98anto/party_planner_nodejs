@@ -23,8 +23,7 @@ export const getProductsUserSide = async (req: Request, res: Response) => {
       maxPrice,
       category,
       location,
-      startDate,
-      endDate,
+      date,
       page = 1,
       limit = 10,
     } = req.query;
@@ -46,19 +45,52 @@ export const getProductsUserSide = async (req: Request, res: Response) => {
     }
 
     if (location) {
-      const providers = await ProviderModal.find({ location });
-      const providerIds = providers.map((p) => p._id);
-      query.providerId = { $in: providerIds };
+      const providers = await ProviderModal.find({
+        locations: { $in: [location] },
+      });
+
+      if (providers.length > 0) {
+        const providerIds = providers.map((p) => p._id);
+        query.providerId = { $in: providerIds };
+        console.log(
+          "Found providers with location",
+          location,
+          ":",
+          providerIds
+        );
+      } else {
+        console.log("No providers found with location:", location);
+        res.status(200).json({
+          success: true,
+          data: [],
+          totalCount: 0,
+          totalPages: 0,
+          currentPage: Number(page),
+        });
+        return;
+      }
     }
 
-    if (startDate || endDate) {
-      query.datesAvailable = {};
-      if (startDate) query.datesAvailable.$gte = new Date(startDate as string);
-      if (endDate) query.datesAvailable.$lte = new Date(endDate as string);
+    if (date) {
+      const dateString = date as string;
+
+      query.$expr = {
+        $in: [
+          {
+            $substr: [
+              {
+                $dateToString: { date: "$datesAvailable", format: "%Y-%m-%d" },
+              },
+              0,
+              10,
+            ],
+          },
+          [dateString],
+        ],
+      };
     }
 
     const skip = (Number(page) - 1) * Number(limit);
-
     const totalCount = await ProductModal.countDocuments(query);
     const totalPages = Math.ceil(totalCount / Number(limit));
 
