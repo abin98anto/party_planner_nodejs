@@ -64,7 +64,13 @@ export const getProductsUserSide = async (req: Request, res: Response) => {
 
     const data = await ProductModal.find(query)
       .populate("categoryId")
-      .populate("providerId")
+      .populate({
+        path: "providerId",
+        populate: {
+          path: "locations",
+          model: "Location",
+        },
+      })
       .skip(skip)
       .limit(Number(limit))
       .sort({ createdAt: -1 });
