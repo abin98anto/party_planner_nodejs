@@ -9,6 +9,9 @@ import categoryRouter from "./routes/CategoryRouter";
 import productRouter from "./routes/ProductRouter";
 import providerRouter from "./routes/ProviderRoutes";
 import locationRouter from "./routes/LocationRouter";
+import addressRouter from "./routes/AddressRouter";
+import cartRouter from "./routes/CartRouter";
+import orderRouter from "./routes/OrderRouter";
 
 const app = express();
 app.use(cors(corsOptions));
@@ -20,6 +23,9 @@ app.use("/category", categoryRouter);
 app.use("/product", productRouter);
 app.use("/provider", providerRouter);
 app.use("/location", locationRouter);
+app.use("/address", addressRouter);
+app.use("/cart", cartRouter);
+app.use("/order", orderRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {

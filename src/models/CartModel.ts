@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const SelectedProductSchema = new mongoose.Schema({
+export const SelectedProductSchema = new mongoose.Schema({
   productId: {
     type: String,
     ref: "Product",

@@ -8,9 +8,9 @@ import {
 
 const addressRouter = express.Router();
 
-addressRouter.get("/:userId", getUserAddress);
 addressRouter.post("/add", addAddress);
 addressRouter.put("/update", updateAddress);
+addressRouter.get("/:userId", getUserAddress);
 addressRouter.delete("/:addressId", deleteAddress);
 
 export default addressRouter;
