@@ -151,7 +151,15 @@ export const updateProduct = async (req: Request, res: Response) => {
 export const getProductDetails = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
-    const productDetails = await ProductModal.findById(productId);
+    const productDetails = await ProductModal.findById(productId)
+      .populate("categoryId")
+      .populate({
+        path: "providerId",
+        populate: {
+          path: "locations",
+          model: "Location",
+        },
+      });
     res.status(200).json({ success: true, data: productDetails });
   } catch (error) {
     console.log("error fetching product details", error);
