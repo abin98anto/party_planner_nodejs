@@ -10,6 +10,8 @@ const AddressSchema = new mongoose.Schema(
     district: String,
     State: String,
     pincode: Number,
+    phone: Number,
+    isDeleted: Boolean,
   },
   {
     timestamps: true,

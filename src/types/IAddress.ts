@@ -1,4 +1,6 @@
 export default interface IAddress {
+  _id?: string;
+  userId: string;
   venue: string;
   place: string;
   landmark: string;
@@ -6,5 +8,6 @@ export default interface IAddress {
   district: string;
   state: string;
   pincode: number;
+  phone: number;
   isDeleted: boolean;
 }
