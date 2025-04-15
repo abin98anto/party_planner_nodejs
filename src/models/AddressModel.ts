@@ -8,7 +8,7 @@ const AddressSchema = new mongoose.Schema(
     landmark: String,
     city: String,
     district: String,
-    State: String,
+    state: String,
     pincode: Number,
     phone: Number,
     isDeleted: Boolean,
