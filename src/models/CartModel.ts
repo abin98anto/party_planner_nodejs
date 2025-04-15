@@ -7,6 +7,7 @@ export const SelectedProductSchema = new mongoose.Schema({
     required: true,
   },
   selectedDates: { type: [Date], required: true },
+  locationId: { type: String, ref: "Location", required: true },
 });
 
 const CartSchema = new mongoose.Schema(

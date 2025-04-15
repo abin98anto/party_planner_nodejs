@@ -1,6 +1,7 @@
 export interface ISelectedProducts {
   productId: string;
   selectedDates: Date[];
+  locationId: string;
 }
 
 export default interface ICart {

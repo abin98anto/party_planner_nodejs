@@ -61,15 +61,20 @@ export const deleteCart = async (req: Request, res: Response) => {
 export const getCart = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const data = await CartModel.findOne({ userId }).populate({
-      path: "products.productId",
-      populate: {
-        path: "providerId",
+    const data = await CartModel.findOne({ userId })
+      .populate({
+        path: "products.productId",
         populate: {
-          path: "locations",
+          path: "providerId",
+          populate: {
+            path: "locations",
+          },
         },
-      },
-    });
+      })
+      .populate({
+        path: "products.locationId",
+        model: "Location",
+      });
     res.status(200).json({ success: true, data });
   } catch (error) {
     console.log("error fetching user's cart", error);
