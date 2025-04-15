@@ -98,31 +98,3 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 };
-
-// export const refreshAccessToken = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   try {
-//     const refreshToken = req.cookies["refreshToken"];
-//     const { data } = await verifyRefreshToken(refreshToken);
-
-//     res
-//       .cookie("accessToken", data, {
-//         httpOnly: true,
-//         secure: true,
-//         sameSite: "none",
-//         maxAge: 30 * 1000,
-//       })
-//       .status(200)
-//       .json(data);
-//     return;
-//   } catch (error) {
-//     res.status(401).json({
-//       success: false,
-//       message:
-//         error instanceof Error ? error.message : comments.TOKEN_REFRESH_FAIL,
-//       err: error,
-//     });
-//   }
-// };
