@@ -1,4 +1,5 @@
 import { ISelectedProducts } from "./ICart";
+import { OrderStatus } from "./misc/enums";
 
 export default interface IOrder {
   _id?: string;
@@ -7,4 +8,5 @@ export default interface IOrder {
   providerIds: string[];
   amount: number;
   address: string;
+  status: OrderStatus;
 }
