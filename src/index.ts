@@ -14,7 +14,7 @@ import cartRouter from "./routes/CartRouter";
 import orderRouter from "./routes/OrderRouter";
 
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 
