@@ -5,11 +5,7 @@ import UserModel from "../models/UserModel";
 import IUser from "../types/IUser";
 import hashPassword from "../utils/HashPassword";
 import CNST from "../utils/constants";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyRefreshToken,
-} from "../utils/jwt";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 export const signup = async (req: Request, res: Response) => {
   try {

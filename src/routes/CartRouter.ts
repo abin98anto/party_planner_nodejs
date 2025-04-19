@@ -5,9 +5,11 @@ import {
   getCart,
   removeFromCart,
 } from "../controllers/CartController";
+import { AuthMiddleware } from "../middlewares/authMiddleware";
 
 const cartRouter = express.Router();
 
+cartRouter.use(AuthMiddleware);
 cartRouter.post("/add/:userId", addToCart);
 cartRouter.put("/remove/:userId", removeFromCart);
 cartRouter.delete("/:cartId", deleteCart);
