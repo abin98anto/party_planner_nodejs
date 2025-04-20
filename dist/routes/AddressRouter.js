@@ -5,7 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const AddressController_1 = require("../controllers/AddressController");
+const authMiddleware_1 = require("../middlewares/authMiddleware");
 const addressRouter = express_1.default.Router();
+addressRouter.use(authMiddleware_1.AuthMiddleware);
 addressRouter.post("/add", AddressController_1.addAddress);
 addressRouter.put("/update", AddressController_1.updateAddress);
 addressRouter.get("/:userId", AddressController_1.getUserAddress);
