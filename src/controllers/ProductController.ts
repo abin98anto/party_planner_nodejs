@@ -15,113 +15,6 @@ export const addProduct = async (req: Request, res: Response) => {
   }
 };
 
-// export const getProductsUserSide = async (req: Request, res: Response) => {
-//   try {
-//     const {
-//       search,
-//       minPrice,
-//       maxPrice,
-//       category,
-//       location,
-//       date,
-//       page = 1,
-//       limit = 10,
-//     } = req.query;
-
-//     const query: any = { isActive: true };
-
-//     if (search) {
-//       query.name = { $regex: search, $options: "i" };
-//     }
-
-//     if (minPrice || maxPrice) {
-//       query.price = {};
-//       if (minPrice) query.price.$gte = Number(minPrice);
-//       if (maxPrice) query.price.$lte = Number(maxPrice);
-//     }
-
-//     if (category) {
-//       query.categoryId = category;
-//     }
-
-//     if (location) {
-//       const providers = await ProviderModal.find({
-//         locations: { $in: [location] },
-//       });
-
-//       if (providers.length > 0) {
-//         const providerIds = providers.map((p) => p._id);
-//         query.providerId = { $in: providerIds };
-//         console.log(
-//           "Found providers with location",
-//           location,
-//           ":",
-//           providerIds
-//         );
-//       } else {
-//         console.log("No providers found with location:", location);
-//         res.status(200).json({
-//           success: true,
-//           data: [],
-//           totalCount: 0,
-//           totalPages: 0,
-//           currentPage: Number(page),
-//         });
-//         return;
-//       }
-//     }
-
-//     if (date) {
-//       const dateString = date as string;
-
-//       query.$expr = {
-//         $in: [
-//           {
-//             $substr: [
-//               {
-//                 $dateToString: { date: "$datesAvailable", format: "%Y-%m-%d" },
-//               },
-//               0,
-//               10,
-//             ],
-//           },
-//           [dateString],
-//         ],
-//       };
-//     }
-
-//     const skip = (Number(page) - 1) * Number(limit);
-//     const totalCount = await ProductModal.countDocuments(query);
-//     const totalPages = Math.ceil(totalCount / Number(limit));
-
-//     const data = await ProductModal.find(query)
-//       .populate("categoryId")
-//       .populate({
-//         path: "providerId",
-//         populate: {
-//           path: "locations",
-//           model: "Location",
-//         },
-//       })
-//       .skip(skip)
-//       .limit(Number(limit))
-//       .sort({ createdAt: -1 });
-
-//     res.status(200).json({
-//       success: true,
-//       data,
-//       totalCount,
-//       totalPages,
-//       currentPage: Number(page),
-//     });
-//   } catch (error) {
-//     console.log("error fetching products", error);
-//     res
-//       .status(500)
-//       .json({ success: false, message: "error fetching products" });
-//   }
-// };
-
 export const getProductsUserSide = async (req: Request, res: Response) => {
   try {
     const {
@@ -179,16 +72,12 @@ export const getProductsUserSide = async (req: Request, res: Response) => {
     }
 
     if (date) {
-      // Convert the incoming date string to a Date object
       const selectedDate = new Date(date as string);
-      // Set the time to start of day (00:00:00)
       selectedDate.setHours(0, 0, 0, 0);
 
-      // Calculate the next day
       const nextDay = new Date(selectedDate);
       nextDay.setDate(nextDay.getDate() + 1);
 
-      // Find products where at least one of the dates in datesAvailable falls within the selected day
       query.datesAvailable = {
         $elemMatch: {
           $gte: selectedDate,
