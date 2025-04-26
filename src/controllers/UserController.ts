@@ -60,7 +60,7 @@ export const login = async (req: Request, res: Response) => {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        maxAge: 15 * 30 * 1000,
+        maxAge: 15 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
