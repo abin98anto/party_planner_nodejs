@@ -9,7 +9,7 @@ export const AuthMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    console.log("checking auth", req.cookies);
+    console.log("checking auth", req.cookies["refreshToken"]);
     const accessToken = req.cookies["refreshToken"];
     if (!accessToken) {
       console.log("no access token found");

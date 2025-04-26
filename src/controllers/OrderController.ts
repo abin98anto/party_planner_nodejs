@@ -30,7 +30,6 @@ export const updateOrder = async (req: Request, res: Response) => {
 
 export const getUserOrders = async (req: Request, res: Response) => {
   try {
-    console.log("the param user order", req.params);
     const { userId } = req.params;
     const orders = await OrderModel.find({ userId });
     res.status(200).json({ success: true, data: orders });
