@@ -12,7 +12,7 @@ const orderRouter = express.Router();
 
 orderRouter.use(AuthMiddleware);
 orderRouter.get("/:orderId", getOrderDetails);
-orderRouter.get("/:userId", getUserOrders);
+orderRouter.get("/user/:userId", getUserOrders);
 orderRouter.post("/add", addOrder);
 orderRouter.put("/update/:orderId", updateOrder);
 
