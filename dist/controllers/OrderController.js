@@ -53,36 +53,21 @@ const getUserOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.getUserOrders = getUserOrders;
-// export const getAllOrders = async (_req: Request, res: Response) => {
-//   try {
-//     const orders = await OrderModel.find();
-//     res.status(200).json({ success: true, data: orders });
-//   } catch (error) {
-//     console.log("error fetching all orders", error);
-//     res.status(500).json({ success: false, message: "error fetching orders" });
-//   }
-// };
 const getAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Extract query parameters
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const status = req.query.status;
-        // Calculate skip value for pagination
         const skip = (page - 1) * limit;
-        // Build filter object
         const filter = {};
         if (status && ["PENDING", "CANCELLED", "COMPLETED"].includes(status)) {
             filter.status = status;
         }
-        // Get total count for pagination
         const totalOrders = yield OrderModel_1.default.countDocuments(filter);
-        // Get paginated orders
         const orders = yield OrderModel_1.default.find(filter)
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
-        // Calculate total pages
         const totalPages = Math.ceil(totalOrders / limit);
         res.status(200).json({
             success: true,

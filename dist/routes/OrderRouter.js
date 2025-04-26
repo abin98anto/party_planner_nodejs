@@ -9,7 +9,7 @@ const authMiddleware_1 = require("../middlewares/authMiddleware");
 const orderRouter = express_1.default.Router();
 orderRouter.use(authMiddleware_1.AuthMiddleware);
 orderRouter.get("/:orderId", OrderController_1.getOrderDetails);
-orderRouter.get("/:userId", OrderController_1.getUserOrders);
+orderRouter.get("/user/:userId", OrderController_1.getUserOrders);
 orderRouter.post("/add", OrderController_1.addOrder);
 orderRouter.put("/update/:orderId", OrderController_1.updateOrder);
 orderRouter.use((0, authMiddleware_1.Authorize)("admin"));

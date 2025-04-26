@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.login = exports.signup = void 0;
+exports.refreshAccessToken = exports.logout = exports.login = exports.signup = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const UserModel_1 = __importDefault(require("../models/UserModel"));
 const HashPassword_1 = __importDefault(require("../utils/HashPassword"));
@@ -73,7 +73,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             httpOnly: true,
             secure: true,
             sameSite: "none",
-            maxAge: 30 * 1000,
+            maxAge: 15 * 60 * 1000,
         })
             .cookie("refreshToken", refreshToken, {
             httpOnly: true,
@@ -83,10 +83,12 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         })
             .status(200)
             .json({ success: true, data: otherData });
+        return;
     }
     catch (error) {
         console.log("error in user login", error);
         res.status(500).json({ message: constants_1.default.SERVER_ERR });
+        return;
     }
 });
 exports.login = login;
@@ -114,3 +116,43 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.logout = logout;
+const refreshAccessToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const refreshToken = req.cookies["refreshToken"];
+        const decoded = (0, jwt_1.verifyRefreshToken)(refreshToken);
+        if (!(decoded === null || decoded === void 0 ? void 0 : decoded._id)) {
+            res
+                .status(401)
+                .json({ success: false, message: "Invalid refresh token." });
+            return;
+        }
+        const user = yield UserModel_1.default.findById(decoded._id);
+        if (!user) {
+            res.status(404).json({ success: false, message: "User not found" });
+            return;
+        }
+        const accessToken = (0, jwt_1.generateAccessToken)({
+            _id: user._id.toString(),
+            email: user.email,
+        });
+        console.log("the new access token", accessToken);
+        res
+            .cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 15 * 30 * 1000,
+        })
+            .status(200)
+            .json({ success: true, message: "new access token created." });
+        return;
+    }
+    catch (error) {
+        console.log("error refreshing access token", error);
+        res
+            .status(400)
+            .json({ success: false, message: "Refresh access token failed" });
+        return;
+    }
+});
+exports.refreshAccessToken = refreshAccessToken;

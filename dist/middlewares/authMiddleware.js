@@ -40,6 +40,7 @@ const AuthMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         next();
     }
     catch (error) {
+        console.log("error in auth middleware", error);
         res.status(401).json({ message: "invalid access token" });
     }
 });
