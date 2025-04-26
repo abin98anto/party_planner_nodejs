@@ -60,7 +60,7 @@ export const login = async (req: Request, res: Response) => {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        maxAge: 30 * 1000,
+        maxAge: 15 * 30 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -122,13 +122,14 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       _id: user._id.toString(),
       email: user.email as string,
     });
+    console.log("the new access token", accessToken);
 
     res
       .cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        maxAge: 30 * 1000,
+        maxAge: 15 * 30 * 1000,
       })
       .status(200)
       .json({ success: true, message: "new access token created." });
