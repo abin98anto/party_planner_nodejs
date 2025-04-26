@@ -10,14 +10,14 @@ export const AuthMiddleware = async (
 ) => {
   try {
     console.log("checking auth", req.cookies["accessToken"]);
-    const accessToken = req.cookies["refreshToken"];
+    const accessToken = req.cookies["accessToken"];
     if (!accessToken) {
       console.log("no access token found");
       res.status(401).json({ message: "access token not found." });
       return;
     }
-    const decoded: JwtData | null = verifyRefreshToken(accessToken);
-    // const decoded: JwtData | null = verifyAccessToken(accessToken);
+    // const decoded: JwtData | null = verifyRefreshToken(accessToken);
+    const decoded: JwtData | null = verifyAccessToken(accessToken);
     if (!decoded?._id) {
       console.log("no id", decoded);
       res.status(401).json({ message: "invalid jwt payload" });
