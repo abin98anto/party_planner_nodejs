@@ -10,7 +10,6 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt";
-import JwtData from "../utils/misc/JwtData";
 
 export const signup = async (req: Request, res: Response) => {
   try {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken } from "../utils/jwt";
+import { verifyAccessToken, verifyRefreshToken } from "../utils/jwt";
 import JwtData from "../utils/misc/JwtData";
 import UserModel from "../models/UserModel";
 
@@ -10,14 +10,14 @@ export const AuthMiddleware = async (
 ) => {
   try {
     console.log("checking auth", req.cookies);
-    const accessToken = req.cookies["accessToken"];
+    const accessToken = req.cookies["refreshToken"];
     if (!accessToken) {
       console.log("no access token found");
       res.status(401).json({ message: "access token not found." });
       return;
     }
-
-    const decoded: JwtData | null = verifyAccessToken(accessToken);
+    const decoded: JwtData | null = verifyRefreshToken(accessToken);
+    // const decoded: JwtData | null = verifyAccessToken(accessToken);
     if (!decoded?._id) {
       console.log("no id", decoded);
       res.status(401).json({ message: "invalid jwt payload" });
