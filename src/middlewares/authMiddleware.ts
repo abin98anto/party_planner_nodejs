@@ -9,39 +9,33 @@ export const AuthMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    console.log("checking auth", req.cookies["accessToken"]);
     const accessToken = req.cookies["accessToken"];
     if (!accessToken) {
-      console.log("no access token found");
       res.status(401).json({ message: "access token not found." });
       return;
     }
-    // const decoded: JwtData | null = verifyRefreshToken(accessToken);
+
     const decoded: JwtData | null = verifyAccessToken(accessToken);
     if (!decoded?._id) {
-      console.log("no id", decoded);
       res.status(401).json({ message: "invalid jwt payload" });
       return;
     }
 
     const userData = await UserModel.findById(decoded._id);
     if (!userData) {
-      console.log("no user data", userData);
       res.status(401).json({ message: "user not found." });
       return;
     }
 
     if (!userData.isActive) {
-      console.log("use inactive");
       res.status(401).json({ message: "user is blocked." });
       return;
     }
 
     req.user = userData;
-    console.log("before next in auth middleware");
     next();
   } catch (error) {
-    console.log("errir in auth middleware", error);
+    console.log("error in auth middleware", error);
     res.status(401).json({ message: "invalid access token" });
   }
 };
