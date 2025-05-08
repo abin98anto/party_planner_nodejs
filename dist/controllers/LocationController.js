@@ -19,9 +19,12 @@ const addLocation = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const locationData = req.body;
         const locationExists = yield LocationModel_1.default.findOne({
             name: locationData.name,
+            isDeleted: false,
         });
         if (locationExists) {
-            res.status(409).json({ message: "Location already exists" });
+            res
+                .status(409)
+                .json({ success: false, message: "Location already exists" });
             return;
         }
         const newLocation = new LocationModel_1.default(locationData);
@@ -29,35 +32,55 @@ const addLocation = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(201).json({ success: true, data: newLocation });
     }
     catch (error) {
-        console.log("error in add location", error);
-        res.status(500).json({ success: false, message: "error in add Location" });
+        console.error("Error in add location:", error);
+        res.status(500).json({ success: false, message: "Error adding location" });
     }
 });
 exports.addLocation = addLocation;
 const getLocations = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield LocationModel_1.default.find({ isDeleted: false });
-        res.status(200).json({ success: true, data });
+        const { page = 1, limit = 6, search = "" } = req.query;
+        const pageNum = parseInt(page, 10);
+        const limitNum = parseInt(limit, 10);
+        const query = { isDeleted: false };
+        if (search) {
+            query.name = { $regex: search, $options: "i" };
+        }
+        const totalCount = yield LocationModel_1.default.countDocuments(query);
+        const data = yield LocationModel_1.default.find(query)
+            .skip((pageNum - 1) * limitNum)
+            .limit(limitNum);
+        const pagination = {
+            totalCount,
+            totalPages: Math.ceil(totalCount / limitNum),
+            currentPage: pageNum,
+            limit: limitNum,
+        };
+        res.status(200).json({ success: true, data, pagination });
     }
     catch (error) {
-        console.log("error fetching all locations", error);
+        console.error("Error fetching locations:", error);
         res
             .status(500)
-            .json({ success: false, message: "error fetching all locations" });
+            .json({ success: false, message: "Error fetching locations" });
     }
 });
 exports.getLocations = getLocations;
 const updateLocation = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const locationData = req.body;
-        const updatedData = yield LocationModel_1.default.findByIdAndUpdate(locationData._id, locationData);
+        const updatedData = yield LocationModel_1.default.findByIdAndUpdate(locationData._id, locationData, { new: true });
+        if (!updatedData) {
+            res.status(404).json({ success: false, message: "Location not found" });
+            return;
+        }
         res.status(200).json({ success: true, data: updatedData });
     }
     catch (error) {
-        console.log("error updating location", error);
+        console.error("Error updating location:", error);
         res
             .status(500)
-            .json({ success: false, message: "error updating location" });
+            .json({ success: false, message: "Error updating location" });
     }
 });
 exports.updateLocation = updateLocation;
