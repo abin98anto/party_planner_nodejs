@@ -56,12 +56,19 @@ exports.getUserOrders = getUserOrders;
 const getAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 8;
         const status = req.query.status;
+        const search = req.query.search;
         const skip = (page - 1) * limit;
         const filter = {};
         if (status && ["PENDING", "CANCELLED", "COMPLETED"].includes(status)) {
             filter.status = status;
+        }
+        if (search) {
+            filter.$or = [
+                { _id: { $regex: search, $options: "i" } },
+                { userId: { $regex: search, $options: "i" } },
+            ];
         }
         const totalOrders = yield OrderModel_1.default.countDocuments(filter);
         const orders = yield OrderModel_1.default.find(filter)
@@ -69,17 +76,22 @@ const getAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             .skip(skip)
             .limit(limit);
         const totalPages = Math.ceil(totalOrders / limit);
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: orders,
-            currentPage: page,
-            totalPages,
-            totalOrders,
+            pagination: {
+                totalOrders,
+                totalPages,
+                currentPage: page,
+                limit,
+            },
         });
     }
     catch (error) {
-        console.log("error fetching all orders", error);
-        res.status(500).json({ success: false, message: "error fetching orders" });
+        console.error("Error fetching all orders:", error);
+        return res
+            .status(500)
+            .json({ success: false, message: "Error fetching orders" });
     }
 });
 exports.getAllOrders = getAllOrders;
