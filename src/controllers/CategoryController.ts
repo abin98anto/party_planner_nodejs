@@ -22,41 +22,20 @@ export const addCategory = async (req: Request, res: Response) => {
   }
 };
 
-// export const getCategories = async (req: Request, res: Response) => {
-//   try {
-//     const data = await CategoryModel.find({ isDeleted: false });
-//     res.status(200).json({ success: true, data });
-//   } catch (error) {
-//     console.log("error fetching all categories", error);
-//     res
-//       .status(500)
-//       .json({ success: false, message: "error fetching all categories" });
-//   }
-// };
-
-// Updated Controller Function
 export const getCategories = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const searchQuery = (req.query.search as string) || "";
-
     const skip = (page - 1) * limit;
-
-    // Create a query object for filtering
     const query: any = { isDeleted: false };
-
-    // Add search condition if search parameter exists
     if (searchQuery) {
-      query.name = { $regex: searchQuery, $options: "i" }; // Case-insensitive search
+      query.name = { $regex: searchQuery, $options: "i" };
     }
-
-    // Get total count for pagination
     const totalCount = await CategoryModel.countDocuments(query);
 
-    // Get paginated results
     const data = await CategoryModel.find(query)
-      .sort({ createdAt: -1 }) // Sort by creation date, newest first
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 

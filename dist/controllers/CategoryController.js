@@ -36,14 +36,35 @@ const addCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.addCategory = addCategory;
 const getCategories = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield CategoryModel_1.default.find({ isDeleted: false });
-        res.status(200).json({ success: true, data });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const searchQuery = req.query.search || "";
+        const skip = (page - 1) * limit;
+        const query = { isDeleted: false };
+        if (searchQuery) {
+            query.name = { $regex: searchQuery, $options: "i" };
+        }
+        const totalCount = yield CategoryModel_1.default.countDocuments(query);
+        const data = yield CategoryModel_1.default.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+        res.status(200).json({
+            success: true,
+            data,
+            pagination: {
+                totalCount,
+                totalPages: Math.ceil(totalCount / limit),
+                currentPage: page,
+                limit,
+            },
+        });
     }
     catch (error) {
-        console.log("error fetching all categories", error);
+        console.log("error fetching categories", error);
         res
             .status(500)
-            .json({ success: false, message: "error fetching all categories" });
+            .json({ success: false, message: "error fetching categories" });
     }
 });
 exports.getCategories = getCategories;
