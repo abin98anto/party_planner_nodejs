@@ -13,4 +13,5 @@ productRouter.use(authMiddleware_1.AuthMiddleware, (0, authMiddleware_1.Authoriz
 productRouter.get("/", ProductController_1.getProducts);
 productRouter.post("/add", ProductController_1.addProduct);
 productRouter.put("/update", ProductController_1.updateProduct);
+productRouter.delete("/:productId", ProductController_1.deleteProduct);
 exports.default = productRouter;

@@ -76,7 +76,7 @@ const getAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             .skip(skip)
             .limit(limit);
         const totalPages = Math.ceil(totalOrders / limit);
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             data: orders,
             pagination: {
@@ -89,7 +89,7 @@ const getAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     catch (error) {
         console.error("Error fetching all orders:", error);
-        return res
+        res
             .status(500)
             .json({ success: false, message: "Error fetching orders" });
     }

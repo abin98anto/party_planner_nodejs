@@ -1,17 +1,27 @@
 import { Request, Response } from "express";
 import IProduct from "../types/IProduct";
-import ProductModal from "../models/ProductModel";
-import ProviderModal from "../models/ProviderModel";
+import ProductModel from "../models/ProductModel";
+import ProviderModel from "../models/ProviderModel";
 
 export const addProduct = async (req: Request, res: Response) => {
   try {
     const productData: IProduct = req.body;
-    const newProduct = new ProductModal(productData);
+    const productExists = await ProductModel.findOne({
+      name: productData.name,
+    });
+    if (productExists) {
+      res
+        .status(409)
+        .json({ success: false, message: "Product already exists" });
+      return;
+    }
+
+    const newProduct = new ProductModel(productData);
     await newProduct.save();
     res.status(201).json({ success: true, data: newProduct });
   } catch (error) {
-    console.log("error adding product", error);
-    res.status(500).json({ success: false, message: "error adding product" });
+    console.error("Error adding product:", error);
+    res.status(500).json({ success: false, message: "Error adding product" });
   }
 };
 
@@ -45,21 +55,14 @@ export const getProductsUserSide = async (req: Request, res: Response) => {
     }
 
     if (location) {
-      const providers = await ProviderModal.find({
+      const providers = await ProviderModel.find({
         locations: { $in: [location] },
       });
 
       if (providers.length > 0) {
         const providerIds = providers.map((p) => p._id);
         query.providerId = { $in: providerIds };
-        console.log(
-          "Found providers with location",
-          location,
-          ":",
-          providerIds
-        );
       } else {
-        console.log("No providers found with location:", location);
         res.status(200).json({
           success: true,
           data: [],
@@ -84,15 +87,13 @@ export const getProductsUserSide = async (req: Request, res: Response) => {
           $lt: nextDay,
         },
       };
-
-      console.log("Filtering by date:", selectedDate, "to", nextDay);
     }
 
     const skip = (Number(page) - 1) * Number(limit);
-    const totalCount = await ProductModal.countDocuments(query);
+    const totalCount = await ProductModel.countDocuments(query);
     const totalPages = Math.ceil(totalCount / Number(limit));
 
-    const data = await ProductModal.find(query)
+    const data = await ProductModel.find(query)
       .populate("categoryId")
       .populate({
         path: "providerId",
@@ -113,43 +114,97 @@ export const getProductsUserSide = async (req: Request, res: Response) => {
       currentPage: Number(page),
     });
   } catch (error) {
-    console.log("error fetching products", error);
+    console.error("Error fetching products:", error);
     res
       .status(500)
-      .json({ success: false, message: "error fetching products" });
+      .json({ success: false, message: "Error fetching products" });
   }
 };
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const data = await ProductModal.find();
-    res.status(200).json({ success: true, data });
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 6;
+    const search = req.query.search as string | undefined;
+
+    if (page < 1 || limit < 1) {
+      res
+        .status(400)
+        .json({ success: false, message: "Invalid page or limit" });
+    }
+
+    const query: any = {};
+    if (search && search.trim()) {
+      query.name = { $regex: search.trim(), $options: "i" };
+    }
+
+    const totalCount = await ProductModel.countDocuments(query);
+    const skip = (page - 1) * limit;
+    const data = await ProductModel.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean();
+    const totalPages = Math.ceil(totalCount / limit) || 1;
+
+    res.status(200).json({
+      success: true,
+      data,
+      pagination: {
+        totalCount,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+    });
   } catch (error) {
-    console.log("error fetching all products", error);
+    console.error("Error fetching all products:", error);
     res
       .status(500)
-      .json({ success: false, message: "error fetching all products" });
+      .json({ success: false, message: "Error fetching all products" });
   }
 };
 
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const productData: Partial<IProduct> = req.body;
-    const updatedData = await ProductModal.findByIdAndUpdate(
+    const updatedData = await ProductModel.findByIdAndUpdate(
       productData._id,
-      productData
+      productData,
+      { new: true }
     );
+    if (!updatedData) {
+      res.status(404).json({ success: false, message: "Product not found" });
+      return;
+    }
     res.status(200).json({ success: true, data: updatedData });
   } catch (error) {
-    console.log("error updating product", error);
-    res.status(500).json({ success: false, message: "error updating product" });
+    console.error("Error updating product:", error);
+    res.status(500).json({ success: false, message: "Error updating product" });
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const { productId } = req.params;
+    const deletedData = await ProductModel.findByIdAndDelete(productId);
+    if (!deletedData) {
+      res.status(404).json({ success: false, message: "Product not found" });
+      return;
+    }
+    res
+      .status(200)
+      .json({ success: true, message: "Product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).json({ success: false, message: "Error deleting product" });
   }
 };
 
 export const getProductDetails = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
-    const productDetails = await ProductModal.findById(productId)
+    const productDetails = await ProductModel.findById(productId)
       .populate("categoryId")
       .populate({
         path: "providerId",
@@ -158,11 +213,15 @@ export const getProductDetails = async (req: Request, res: Response) => {
           model: "Location",
         },
       });
+    if (!productDetails) {
+      res.status(404).json({ success: false, message: "Product not found" });
+      return;
+    }
     res.status(200).json({ success: true, data: productDetails });
   } catch (error) {
-    console.log("error fetching product details", error);
+    console.error("Error fetching product details:", error);
     res
       .status(500)
-      .json({ success: false, message: "error fetching product details" });
+      .json({ success: false, message: "Error fetching product details" });
   }
 };

@@ -68,7 +68,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
 
     const totalPages = Math.ceil(totalOrders / limit);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       data: orders,
       pagination: {
@@ -80,7 +80,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error fetching all orders:", error);
-    return res
+     res
       .status(500)
       .json({ success: false, message: "Error fetching orders" });
   }

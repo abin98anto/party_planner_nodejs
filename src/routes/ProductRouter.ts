@@ -5,6 +5,7 @@ import {
   getProducts,
   getProductsUserSide,
   updateProduct,
+  deleteProduct,
 } from "../controllers/ProductController";
 import { AuthMiddleware, Authorize } from "../middlewares/authMiddleware";
 
@@ -17,5 +18,6 @@ productRouter.use(AuthMiddleware, Authorize("admin"));
 productRouter.get("/", getProducts);
 productRouter.post("/add", addProduct);
 productRouter.put("/update", updateProduct);
+productRouter.delete("/:productId", deleteProduct);
 
 export default productRouter;
