@@ -62,6 +62,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
 
     const totalOrders = await OrderModel.countDocuments(filter);
     const orders = await OrderModel.find(filter)
+      .populate("userId")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -80,9 +81,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error fetching all orders:", error);
-     res
-      .status(500)
-      .json({ success: false, message: "Error fetching orders" });
+    res.status(500).json({ success: false, message: "Error fetching orders" });
   }
 };
 
